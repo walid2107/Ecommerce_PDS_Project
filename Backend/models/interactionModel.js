@@ -13,7 +13,7 @@ const InteractionSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['clic', 'vue', 'panier', 'achat','aime'], // Types d'interactions possibles
+    enum: ['clic', 'vue', 'panier', 'achat','aime','panier abandonné',"n'aime plus"], // Types d'interactions possibles
     required: true
   },
   date: {

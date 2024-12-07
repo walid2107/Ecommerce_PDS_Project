@@ -6,6 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
+import {addInteraction} from "../features/Interactions/interactionSlice";
 import {
   deleteCartProduct,
   getUserCart,
@@ -52,6 +53,7 @@ const Cart = () => {
 
   const deleteACartProduct = (id) => {
     dispatch(deleteCartProduct({ id: id, config2: config2 }));
+    dispatch(addInteraction({produitId:id,type:"panier abandonné"}));
     setTimeout(() => {
       dispatch(getUserCart(config2));
     }, 200);

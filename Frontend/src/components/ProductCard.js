@@ -60,7 +60,14 @@ const ProductCard = (props) => {
               <div className="wishlist-icon position-absolute">
                 <button
                   className="border-0 bg-transparent"
-                  onClick={(e) => addToWish(item?._id)}
+                  onClick={(e) =>  {
+                    if(!isWishlist){
+                    addToInteraction({produitId:item?._id,type:"aime"});
+                  }else{
+                    addToInteraction({produitId:item?._id,type:"n'aime plus"});
+                  }
+                    addToWish(item?._id);                    
+                  }}
                 >
                   {isWishlist ? (
                     <AiFillHeart className="fs-5 me-1" />

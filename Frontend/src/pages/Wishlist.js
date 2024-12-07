@@ -5,6 +5,7 @@ import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist } from "../features/products/productSlilce";
 import { getuserProductWishlist } from "../features/user/userSlice";
+import {addInteraction} from "../features/Interactions/interactionSlice";
 const Wishlist = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -17,6 +18,7 @@ const Wishlist = () => {
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
   const removeFromWishlist = (id) => {
     dispatch(addToWishlist(id));
+    dispatch(addInteraction({produitId:id,type:"n'aime plus"}));
     setTimeout(() => {
       dispatch(getuserProductWishlist());
     }, 300);
