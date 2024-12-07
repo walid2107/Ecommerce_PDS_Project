@@ -36,10 +36,12 @@ const SingleProduct = () => {
   const cartState = useSelector((state) => state?.auth?.cartProducts);
   const rat = productState?.totalrating;
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
+  
   console.log(wishlistState);
 
   useEffect(() => {
     dispatch(getAProduct(getProductId));
+    addToInteraction({produitId:getProductId,type:"vue"})
     dispatch(getUserCart());
     dispatch(getAllProducts());
   }, []);
