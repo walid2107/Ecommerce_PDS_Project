@@ -38,13 +38,13 @@ var orderSchema = new mongoose.Schema(
       },
     },
     paymentInfo: {
-      razorpayOrderId: {
+        OrderId: {
         type: String,
-        required: true,
+        required: false,
       },
-      razorpayPaymentId: {
+      PaymentId: {
         type: String,
-        required: true,
+        required: false,
       },
     },
     orderItems: [

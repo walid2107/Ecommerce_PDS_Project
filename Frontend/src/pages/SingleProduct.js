@@ -65,6 +65,7 @@ const SingleProduct = () => {
           color,
           price: productState?.price,
         }),
+        addToInteraction({produitId:productState?._id,type:"panier"}),
         navigate("/cart")
       );
     }
@@ -259,7 +260,7 @@ const SingleProduct = () => {
                       type="button"
                       onClick={() => {
                         alreadyAdded ? navigate("/cart") : uploadCart();
-                      }}
+                      }} 
                     >
                       {alreadyAdded ? "Go to Cart" : "Add to Cart "}
                     </button>

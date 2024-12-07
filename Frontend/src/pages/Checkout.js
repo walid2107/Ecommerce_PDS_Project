@@ -14,6 +14,8 @@ import {
   resetState,
 } from "../features/user/userSlice";
 
+import {addInteraction} from "../features/Interactions/interactionSlice";
+
 let shippingSchema = yup.object({
   firstname: yup.string().required("First Name is Required"),
   lastname: yup.string().required("Last Name is Required"),
@@ -31,8 +33,6 @@ const Checkout = () => {
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
-    razorpayPaymentId: "",
-    razorpayOrderId: "",
   });
   const navigate = useNavigate();
 
@@ -66,6 +66,9 @@ const Checkout = () => {
       authState?.orderedProduct?.order !== null &&
       authState?.orderedProduct?.success === true
     ) {
+      authState?.orderedProduct?.order?.orderItems.forEach(product=>{
+        dispatch(addInteraction({produitId:product._id,type:"achat"}))
+      })
       navigate("/my-orders");
     }
   }, [authState]);
@@ -121,76 +124,18 @@ const Checkout = () => {
   }, []);
 
   const checkOutHandler = async () => {
-    const res = await loadScript(
-      "https://checkout.razorpay.com/v1/checkout.js"
-    );
-
-    if (!res) {
-      alert("Razorpay SDK faild to Load");
-      return;
-    }
-    const result = await axios.post(
-      "http://localhost:5000/api/user/order/checkout",
-      { amount: totalAmount + 100 },
-      config
-    );
-
-    if (!result) {
-      alert("Something Went Wrong");
-      return;
-    }
-
-    const { amount, id: order_id, currency } = result.data.order;
-
-    const options = {
-      key: "rzp_test_HSSeDI22muUrLR", // Enter the Key ID generated from the Dashboard
-      amount: amount,
-      currency: currency,
-      name: "Cart's corner",
-      description: "Test Transaction",
-
-      order_id: order_id,
-      handler: async function (response) {
-        const data = {
-          orderCreationId: order_id,
-          razorpayPaymentId: response.razorpay_payment_id,
-          razorpayOrderId: response.razorpay_order_id,
-        };
-
-        const result = await axios.post(
-          "http://localhost:5000/api/user/order/paymentVerification",
-          data,
-          config
-        );
-
         dispatch(
           createAnOrder({
             totalPrice: totalAmount,
             totalPriceAfterDiscount: totalAmount,
             orderItems: cartProductState,
-            paymentInfo: result.data,
+            paymentInfo: {},
             shippingInfo: JSON.parse(localStorage.getItem("address")),
           })
         );
         dispatch(deleteUserCart(config2));
         localStorage.removeItem("address");
-        dispatch(resetState());
-      },
-      prefill: {
-        name: "Dev Corner",
-        email: "devcorner@example.com",
-        contact: "9999999999",
-      },
-      notes: {
-        address: "developer's cornor office",
-      },
-      theme: {
-        color: "#61dafb",
-      },
-    };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
+        dispatch(resetState());         
   };
   return (
     <>
@@ -231,7 +176,7 @@ const Checkout = () => {
               </nav>
               <h4 className="title total">Contact Information</h4>
               <p className="user-details total">
-                Dev Jariwala (devjariwala8444@gmail.com)
+                 WYSBMarket (WYSBMarket@gmail.com)
               </p>
               <h4 className="mb-3">Shipping Address</h4>
               <form

@@ -429,6 +429,7 @@ const createOrder = asyncHandler(async (req, res) => {
     paymentInfo,
   } = req.body;
   const { _id } = req.user;
+  console.log(req.body);
   try {
     const order = await Order.create({
       shippingInfo,
