@@ -40,15 +40,23 @@ def recommend(user_id, data, model, n=5):
     produits = data["produitId"].unique()
     already_interacted = data[data["clientId"] == user_id]["produitId"].tolist()
     
+    print(f"Produits déjà vus par l'utilisateur {user_id}: {already_interacted}")
+    
     # Exclure les produits déjà vus par l'utilisateur
     produits = [p for p in produits if p not in already_interacted]
+    
+    print(f"Produits à recommander après exclusion des produits vus: {produits}")
     
     # Calculer les scores de prédiction pour chaque produit
     recommendations = [(p, model.predict(user_id, p).est) for p in produits]
     
     # Trier les recommandations par score décroissant
     recommendations = sorted(recommendations, key=lambda x: x[1], reverse=True)
+    
+    print(f"Recommandations pour {user_id}: {recommendations}")
+    
     return recommendations[:n]
+
 
 # Tester le modèle
 if __name__ == "__main__":
@@ -68,5 +76,6 @@ if __name__ == "__main__":
         recommendations = recommend(user_id, data, model)
         for i, (prod, score) in enumerate(recommendations, start=1):
             print(f"{i}. Produit ID: {prod}, Score: {score:.2f}")
+
     else:
         print("Veuillez fournir un user_id en argument pour tester les recommandations.")
