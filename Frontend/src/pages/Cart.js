@@ -51,9 +51,9 @@ const Cart = () => {
     }
   }, [productupdateDetail]);
 
-  const deleteACartProduct = (id) => {
+  const deleteACartProduct = (id,price,category,brand) => {
     dispatch(deleteCartProduct({ id: id, config2: config2 }));
-    dispatch(addInteraction({produitId:id,type:"panier abandonné"}));
+    dispatch(addInteraction({produitId:id,ProduitPrix:price,ProduitCategorie:category,brand:brand,type:"panier abandonné"}));
     setTimeout(() => {
       dispatch(getUserCart(config2));
     }, 200);
@@ -134,7 +134,8 @@ const Cart = () => {
                       <div>
                         <AiFillDelete
                           onClick={() => {
-                            deleteACartProduct(item?._id);
+                            console.log(item)
+                            deleteACartProduct(item?._id,item?.productId.price,item?.productId.category,item?.productId.brand);
                           }}
                           className="text-danger "
                         />

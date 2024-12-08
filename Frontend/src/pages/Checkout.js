@@ -32,6 +32,7 @@ const Checkout = () => {
   const authState = useSelector((state) => state?.auth);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
+  const [shippedProducts,setShippedProducts]=useState([]);
   const [paymentInfo, setPaymentInfo] = useState({
   });
   const navigate = useNavigate();
@@ -66,9 +67,9 @@ const Checkout = () => {
       authState?.orderedProduct?.order !== null &&
       authState?.orderedProduct?.success === true
     ) {
-      authState?.orderedProduct?.order?.orderItems.forEach(product=>{
-        dispatch(addInteraction({produitId:product._id,type:"achat"}))
-      })
+      for (let index = 0; index < shippedProducts?.length; index++) {
+        dispatch(addInteraction({produitId:shippedProducts[index].productId._id,ProduitPrix:shippedProducts[index].productId.price,ProduitCategorie:shippedProducts[index].productId?.category,brand:shippedProducts[index].productId.brand,type:"achat"}))
+      }
       navigate("/my-orders");
     }
   }, [authState]);
@@ -111,6 +112,7 @@ const Checkout = () => {
   };
 
   useEffect(() => {
+    setShippedProducts(cartState);
     let items = [];
     for (let index = 0; index < cartState?.length; index++) {
       items.push({

@@ -16,9 +16,9 @@ const Wishlist = () => {
   };
 
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
-  const removeFromWishlist = (id) => {
+  const removeFromWishlist = (id,price,category,brand) => {
     dispatch(addToWishlist(id));
-    dispatch(addInteraction({produitId:id,type:"n'aime plus"}));
+    dispatch(addInteraction({produitId:id,ProduitPrix:price,ProduitCategorie:category,brand:brand,type:"n'aime plus"}));
     setTimeout(() => {
       dispatch(getuserProductWishlist());
     }, 300);
@@ -39,7 +39,7 @@ const Wishlist = () => {
                   <div className="wishlist-card position-relative">
                     <img
                       onClick={() => {
-                        removeFromWishlist(item?._id);
+                        removeFromWishlist(item?._id,item?.price,item?.category,item?.brand);
                       }}
                       src="images/cross.svg"
                       alt="cross"

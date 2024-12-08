@@ -62,9 +62,9 @@ const ProductCard = (props) => {
                   className="border-0 bg-transparent"
                   onClick={(e) =>  {
                     if(!isWishlist){
-                    addToInteraction({produitId:item?._id,type:"aime"});
+                    addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"aime"});
                   }else{
-                    addToInteraction({produitId:item?._id,type:"n'aime plus"});
+                    addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"n'aime plus"});
                   }
                     addToWish(item?._id);                    
                   }}
@@ -84,7 +84,7 @@ const ProductCard = (props) => {
                   height={"250px"}
                   width={"100%"}
                   onClick={() =>{ 
-                    addToInteraction({produitId:item?._id,type:"clic"});
+                    addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"});
                     navigate("/product/" + item?._id)}}
                 />
                 <img
@@ -93,7 +93,7 @@ const ProductCard = (props) => {
                   height={"250px"}
                   width={"100%"}
                   onClick={() => {
-                    addToInteraction({produitId:item?._id,type:"clic"});
+                    addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"});
                     navigate("/product/" + item?._id)}}
                 />
               </div>

@@ -11,6 +11,18 @@ const InteractionSchema = new mongoose.Schema({
     ref: 'Product',
     required: true
   },
+  ProduitPrix: {
+    type: Number,
+    required: true,
+  },
+  ProduitCategorie: {
+    type: String,
+    required: true,
+  },
+  brand: {
+    type: String,
+    required: true,
+  },
   type: {
     type: String,
     enum: ['clic', 'vue', 'panier', 'achat','aime','panier abandonné',"n'aime plus"], // Types d'interactions possibles
@@ -20,7 +32,7 @@ const InteractionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-});
+});  
 
 
 module.exports = mongoose.model('InteractionType', InteractionSchema);

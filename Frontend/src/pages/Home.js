@@ -244,7 +244,7 @@ const Home = () => {
                           height={"250px"}
                           width={"260px"}
                           onClick={() =>{ 
-                            addToInteraction({produitId:item?._id,type:"clic"});
+                            addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"});
                             navigate("/product/" + item?._id)}}
                         />
                         <img
@@ -254,7 +254,7 @@ const Home = () => {
                           height={"250px"}
                           width={"260px"}
                           onClick={() =>{ 
-                            addToInteraction({produitId:item?._id,type:"clic"});
+                            addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"});
                             navigate("/product/" + item?._id)}}
                         />
                       </div>
@@ -419,7 +419,7 @@ const Home = () => {
                           height={"250px"}
                           width={"100%"}
                           onClick={() =>{ 
-                            addToInteraction({produitId:item?._id,type:"clic"})
+                            addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"})
                             navigate("/product/" + item?._id)}}
                         />
                         <img
@@ -429,7 +429,7 @@ const Home = () => {
                           height={"250px"}
                           width={"100%"}
                           onClick={() =>{
-                            addToInteraction({produitId:item?._id,type:"clic"})
+                            addToInteraction({produitId:item?._id,ProduitPrix:item?.price,ProduitCategorie:item?.category,brand:item?.brand,type:"clic"})
                             navigate("/product/" + item?._id)}}
                         />
                       </div>

@@ -41,7 +41,6 @@ const SingleProduct = () => {
 
   useEffect(() => {
     dispatch(getAProduct(getProductId));
-    addToInteraction({produitId:getProductId,type:"vue"})
     dispatch(getUserCart());
     dispatch(getAllProducts());
   }, []);
@@ -65,7 +64,7 @@ const SingleProduct = () => {
           color,
           price: productState?.price,
         }),
-        addToInteraction({produitId:productState?._id,type:"panier"}),
+        addToInteraction({produitId:productState?._id,ProduitPrix:productState?.price,ProduitCategorie:productState?.category,brand:productState?.brand,type:"panier"}),
         navigate("/cart")
       );
     }
@@ -95,6 +94,7 @@ const SingleProduct = () => {
   const [popularProduct, setPopularProduct] = useState([]);
 
   useEffect(() => {
+    addToInteraction({produitId:productState?._id,ProduitPrix:productState?.price,ProduitCategorie:productState?.category,brand:productState?.brand,type:"vue"})
     let data = [];
     for (let index = 0; index < productsState.length; index++) {
       const element = productsState[index];
@@ -141,7 +141,7 @@ const SingleProduct = () => {
       <Meta title={"Product Name"} />
       <BreadCrumb title={productState?.title} />
       <Container  class1="main-product-wrapper py-5 home-wrapper-2">
-        <div className="row" onClick={()=>{addToInteraction({produitId:productState?._id,type:"clic"})}} >
+        <div className="row" onClick={()=>{addToInteraction({produitId:productState?._id,ProduitPrix:productState?.price,ProduitCategorie:productState?.category,brand:productState?.brand,type:"clic"})}} >
           <div className="col-6">
             <div className="main-product-image">
               <div>
