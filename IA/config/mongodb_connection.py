@@ -22,7 +22,7 @@ def get_db_connection():
         # Sélectionner la base de données (remplacer "ecommerce_db" par le nom de votre base de données)
         db = client["test"]
         
-        print("Connexion à MongoDB réussie")
+        #print("Connexion à MongoDB réussie")
         return db
     except Exception as e:
         print(f"Erreur de connexion à MongoDB : {e}")

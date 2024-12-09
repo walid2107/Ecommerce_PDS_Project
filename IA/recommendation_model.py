@@ -6,17 +6,33 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 from config.mongodb_connection import get_db_connection
+import json
+import sys
+
+# Fonction pour convertir les ObjectId en chaîne
+def convert_objectid_to_str(obj):
+    if isinstance(obj, dict):
+        return {k: convert_objectid_to_str(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_objectid_to_str(i) for i in obj]
+    elif isinstance(obj, pd.Series):
+        return obj.apply(lambda x: str(x) if isinstance(x, pd._libs.tslibs.np_datetime._datetime) else x)
+    elif isinstance(obj, (bytes, bytearray)):  # On pourrait rencontrer d'autres types spécifiques de MongoDB
+        return str(obj)
+    else:
+        return obj
 
 # Charger les données depuis MongoDB
 def load_data():
     db = get_db_connection()
     if db is None:
-        print("Échec de la connexion à la base de données. Impossible de continuer.")
+        sys.stderr.write("Échec de la connexion à la base de données. Impossible de continuer.\n")
         return None
     
-    # Charger les données d'interaction depuis la collection "interactions"
+    # Charger les données d'interaction depuis la collection "interactiontypes"
     interactions_collection = db["interactiontypes"]
     df = pd.DataFrame(list(interactions_collection.find()))
+    
     # Mapper les types d'interaction à des notes (scores)
     interaction_mapping = {
         "clic": 1,
@@ -28,11 +44,14 @@ def load_data():
         "n'aime plus": 1
     }
     df["rating"] = df["type"].map(interaction_mapping)
+    
+    # Convertir les ObjectId en chaînes avant de retourner le dataframe
+    df = convert_objectid_to_str(df)
     return df
 
 # Construire une matrice de similarité basée sur le contenu
 def build_content_similarity(data):
-    # Sélectionner les attributs produits
+    #print("Construction de la matrice de similarité basée sur le contenu...")
     product_features = data[["produitId", "ProduitPrix", "ProduitCategorie", "brand"]].drop_duplicates()
     
     # Encodage TF-IDF pour les colonnes textuelles
@@ -60,6 +79,7 @@ def build_content_similarity(data):
 
 # Entraîner le modèle de recommandation collaboratif
 def train_model(data):
+    #print("Entraînement du modèle collaboratif...")
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(data[["clientId", "produitId", "rating"]], reader)
     
@@ -94,10 +114,10 @@ def recommend(user_id, data, model, content_similarities, n=5):
     for i, (prod, collab_score) in enumerate(collaborative_scores):
         content_score = content_scores[i][1]
         final_score = 0.5 * collab_score + 0.5 * content_score
-        recommendations.append((prod, final_score))
+        recommendations.append({"ProduitID": str(prod), "Score": final_score})  # Assurez-vous que le produit est une chaîne
     
     # Trier les recommandations par score décroissant
-    recommendations = sorted(recommendations, key=lambda x: x[1], reverse=True)
+    recommendations = sorted(recommendations, key=lambda x: x["Score"], reverse=True)
     
     return recommendations[:n]
 
@@ -109,7 +129,7 @@ if __name__ == "__main__":
     data = load_data()
     
     if data is None:
-        print("Impossible de charger les données depuis MongoDB.")
+        sys.stderr.write("Impossible de charger les données depuis MongoDB.\n")
         sys.exit()
 
     # Construire la matrice de similarité basée sur le contenu
@@ -121,14 +141,13 @@ if __name__ == "__main__":
     # Vérifier si un user_id est fourni en ligne de commande
     if len(sys.argv) > 1:
         user_id = sys.argv[1]
-        print(f"\nRecommandations pour l'utilisateur {user_id} :\n")
-        
         recommendations = recommend(user_id, data, model, content_similarities)
         
         if recommendations:
-            for i, (prod, score) in enumerate(recommendations, start=1):
-                print(f"{i}. Produit ID: {prod}, Score: {score:.2f}")
+            # Convertir les recommandations en JSON
+            recommendations = convert_objectid_to_str(recommendations)  # Assurez-vous de convertir toutes les données
+            print(json.dumps(recommendations, indent=4))  # Cela convertit les données en JSON et les imprime
         else:
-            print("Aucune recommandation disponible pour cet utilisateur.")
+            sys.stderr.write("Aucune recommandation disponible pour cet utilisateur.\n")
     else:
-        print("Veuillez fournir un user_id en argument pour tester les recommandations.")
+        sys.stderr.write("Veuillez fournir un user_id en argument pour tester les recommandations.\n")
