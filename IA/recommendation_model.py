@@ -5,11 +5,18 @@ from surprise.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
+from config.mongodb_connection import get_db_connection
 
-# Charger les données
-def load_data(file_path="interactions.csv"):
-    df = pd.read_csv(file_path)
+# Charger les données depuis MongoDB
+def load_data():
+    db = get_db_connection()
+    if db is None:
+        print("Échec de la connexion à la base de données. Impossible de continuer.")
+        return None
     
+    # Charger les données d'interaction depuis la collection "interactions"
+    interactions_collection = db["interactiontypes"]
+    df = pd.DataFrame(list(interactions_collection.find()))
     # Mapper les types d'interaction à des notes (scores)
     interaction_mapping = {
         "clic": 1,
@@ -51,7 +58,7 @@ def build_content_similarity(data):
     product_similarities = pd.DataFrame(similarity_matrix, index=product_features["produitId"], columns=product_features["produitId"])
     return product_similarities
 
-# Entraîner le modèle de recommandation
+# Entraîner le modèle de recommandation collaboratif
 def train_model(data):
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(data[["clientId", "produitId", "rating"]], reader)
@@ -98,10 +105,13 @@ def recommend(user_id, data, model, content_similarities, n=5):
 if __name__ == "__main__":
     import sys
 
-    # Charger les données
-    file_path = "interactions.csv"
-    data = load_data(file_path)
+    # Charger les données depuis MongoDB
+    data = load_data()
     
+    if data is None:
+        print("Impossible de charger les données depuis MongoDB.")
+        sys.exit()
+
     # Construire la matrice de similarité basée sur le contenu
     content_similarities = build_content_similarity(data)
     
