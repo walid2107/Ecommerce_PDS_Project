@@ -85,8 +85,10 @@ const Home = () => {
       <div className="col-6">
       <div className="d-flex flex-wrap gap-10 justify-content-between align-items-center">
   {/* Limit the number of displayed products to 4 */}
-  {recommandedProducts?.slice(0, 4).map((product) => (
-    <div key={product?.product?._id} className="small-banner position-relative">
+  {recommandedProducts?.slice(1, 5).map((product) => (
+    <div key={product?.product?._id}  className="small-banner position-relative"  onClick={()=>{
+      navigate("/product/" + product?.product?._id)
+    }}>
       <div className="image-container1">
         <img
           src={product?.product?.images[0]?.url}
@@ -102,9 +104,6 @@ const Home = () => {
     </div>
   ))}
 </div>
-
-
-
       </div>
         </div>}
       </Container>

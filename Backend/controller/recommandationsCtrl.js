@@ -19,12 +19,14 @@ const getRecommandations = asyncHandler(async (req, res) => {
   
      python.stdout.on('data', async (data) => {
       const recommendedProductsData = JSON.parse(data.toString());
+      console.log(recommendedProductsData);
       // Récupération des produits recommandés avec Promise.all
       const productsRecommanded = await Promise.all(
         recommendedProductsData.map(async (element) => {
           return  {product: await Product.findById(element.ProduitID), score:element.Score };
         })
       );
+      console.log(productsRecommanded);
       res.json(productsRecommanded);
     });
     python.stderr.on('data', (data) => {

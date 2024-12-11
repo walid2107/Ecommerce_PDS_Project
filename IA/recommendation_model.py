@@ -26,11 +26,18 @@ def convert_objectid_to_str(obj):
 def load_data():
     db = get_db_connection()
     if db is None:
-        sys.stderr.write("Échec de la connexion à la base de données. Impossible de continuer.\n")
-        return None
+        sys.stderr.write([])
+        sys.exit()
     
     # Charger les données d'interaction depuis la collection "interactiontypes"
     interactions_collection = db["interactiontypes"]
+     
+        # Si la collection est vide, retourner un tableau vide
+    if not list(interactions_collection.find()):
+        print([])
+        sys.exit()
+    
+
     df = pd.DataFrame(list(interactions_collection.find()))
     
     # Mapper les types d'interaction à des notes (scores)
@@ -51,35 +58,42 @@ def load_data():
 
 # Construire une matrice de similarité basée sur le contenu
 def build_content_similarity(data):
-    #print("Construction de la matrice de similarité basée sur le contenu...")
+    # print("Construction de la matrice de similarité basée sur le contenu...")
+
     product_features = data[["produitId", "ProduitPrix", "ProduitCategorie", "brand"]].drop_duplicates()
-    
+
+    # Vérifier s'il y a des valeurs manquantes et les gérer
+    product_features["ProduitCategorie"] = product_features["ProduitCategorie"].fillna('')
+    product_features["brand"] = product_features["brand"].fillna('')
+
     # Encodage TF-IDF pour les colonnes textuelles
-    vectorizer = TfidfVectorizer()
-    category_matrix = vectorizer.fit_transform(product_features["ProduitCategorie"])
-    brand_matrix = vectorizer.fit_transform(product_features["brand"])
-    
+    vectorizer_category = TfidfVectorizer()
+    vectorizer_brand = TfidfVectorizer()
+
+    category_matrix = vectorizer_category.fit_transform(product_features["ProduitCategorie"])
+    brand_matrix = vectorizer_brand.fit_transform(product_features["brand"])
+
     # Normaliser les prix
     scaler = MinMaxScaler()
     product_features["ProduitPrix"] = scaler.fit_transform(product_features[["ProduitPrix"]])
-    
+
     # Combiner toutes les caractéristiques
     combined_features = np.hstack((
         product_features["ProduitPrix"].values.reshape(-1, 1),
         category_matrix.toarray(),
         brand_matrix.toarray()
     ))
-    
+
     # Calculer la matrice de similarité cosinus
     similarity_matrix = cosine_similarity(combined_features)
-    
+
     # Associer les similarités aux IDs de produits
     product_similarities = pd.DataFrame(similarity_matrix, index=product_features["produitId"], columns=product_features["produitId"])
     return product_similarities
 
 # Entraîner le modèle de recommandation collaboratif
 def train_model(data):
-    #print("Entraînement du modèle collaboratif...")
+    # print("Entraînement du modèle collaboratif...")
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(data[["clientId", "produitId", "rating"]], reader)
     
@@ -87,7 +101,7 @@ def train_model(data):
     trainset, testset = train_test_split(dataset, test_size=0.25)
     
     # Utiliser SVD (Singular Value Decomposition)
-    model = SVD()
+    model = SVD(n_factors=100, n_epochs=50, lr_all=0.005, reg_all=0.02)
     model.fit(trainset)
     
     return model, testset
@@ -101,19 +115,35 @@ def recommend(user_id, data, model, content_similarities, n=5):
     produits = [p for p in produits if p not in already_interacted]
     
     # Calculer les scores de prédiction collaboratifs
-    collaborative_scores = [(p, model.predict(user_id, p).est) for p in produits]
+    collaborative_scores = []
+    for p in produits:
+        pred = model.predict(user_id, p)
+        # print(f"Predicted score for user {user_id} and product {p}: {pred.est}")  # Affichage de la prédiction
+        collaborative_scores.append((p, pred.est))
     
     # Calculer les scores de similarité contenus
-    content_scores = [
-        (p, content_similarities.loc[already_interacted, p].mean() if p in content_similarities.columns else 0)
-        for p in produits
-    ]
+    content_scores = []
+    for p in produits:
+        if p in content_similarities.columns:
+            score = content_similarities.loc[already_interacted, p].mean()
+            # Remplacer NaN par 0 si nécessaire
+            if np.isnan(score):
+                score = 0
+            # print(f"Content similarity score for product {p}: {score}")  # Affichage de la similarité
+        else:
+            score = 0
+        content_scores.append((p, score))
     
     # Fusionner les scores (pondération 50/50 pour cet exemple)
     recommendations = []
     for i, (prod, collab_score) in enumerate(collaborative_scores):
         content_score = content_scores[i][1]
         final_score = 0.5 * collab_score + 0.5 * content_score
+        
+        # Assurer que le score ne soit jamais NaN
+        if np.isnan(final_score):
+            final_score = 0
+        
         recommendations.append({"ProduitID": str(prod), "Score": final_score})  # Assurez-vous que le produit est une chaîne
     
     # Trier les recommandations par score décroissant
@@ -129,7 +159,7 @@ if __name__ == "__main__":
     data = load_data()
     
     if data is None:
-        sys.stderr.write("Impossible de charger les données depuis MongoDB.\n")
+        sys.stderr.write([])
         sys.exit()
 
     # Construire la matrice de similarité basée sur le contenu
