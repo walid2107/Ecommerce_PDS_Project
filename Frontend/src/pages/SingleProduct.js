@@ -164,7 +164,7 @@ const SingleProduct = () => {
                 <h3 className="title">{productState?.title}</h3>
               </div>
               <div className="border-bottom py-3">
-                <p className="price"> Rs. {productState?.price}/-</p>
+                <p className="price">{productState?.price} DT.</p>
                 <div className="d-flex align-items-center gap-10">
                   <ReactStars
                     count={5}

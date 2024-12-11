@@ -43,9 +43,21 @@ const rateProduct = async (data) => {
   }
 };
 
+const recommandProduct = async () => {
+  const response = await axios.get(`${base_url}recommendations`,config);
+  if (response.data) {
+    console.log(response.data)
+    return response.data;
+  }
+};
+
+
+
+
 export const productSevice = {
   getProducts,
   addToWishlist,
   getSingleProduct,
   rateProduct,
+  recommandProduct
 };

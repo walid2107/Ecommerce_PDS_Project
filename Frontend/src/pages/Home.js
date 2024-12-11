@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import BlogCard from "../components/BlogCard";
@@ -16,7 +16,7 @@ import view from "../images/view.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
-import { getAllProducts } from "../features/products/productSlilce";
+import { getAllProducts, getRecommandedProducts } from "../features/products/productSlilce";
 import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
@@ -25,18 +25,27 @@ import {addInteraction} from "../features/Interactions/interactionSlice";
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state?.product?.product);
+  const [recommandedProducts,setRecommandedProducts]=useState(useSelector((state) => state?.product?.recommandedProducts));
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    getRecommandProducts();
     getblogs();
     getProducts();
-  }, []);
+    const sortedProducts = [...recommandedProducts].sort((a, b) => b.score - a.score);
+    setRecommandedProducts(sortedProducts);
+    
+  },[]);
   const getblogs = () => {
     dispatch(getAllBlogs());
   };
+  
 
+  const getRecommandProducts = () => {
+    dispatch(getRecommandedProducts());
+  };
   const getProducts = () => {
     dispatch(getAllProducts());
   };
@@ -53,83 +62,51 @@ const Home = () => {
   return (
     <>
       <Container class1="home-wrapper-1 py-5">
+        { recommandedProducts.length > 0 &&
         <div className="row">
-          <div className="col-6">
-            <div className="main-banner position-relative ">
-              <img
-                src="images/main-banner-1.jpg"
-                className="img-fluid rounded-3"
-                alt="main banner"
-              />
-              <div className="main-banner-content position-absolute">
-                <h4>SUPERCHARGED FOR PROS.</h4>
-                <h5>iPad S13+ Pro.</h5>
-                <p>From Rs. 81,900.00 </p>
-                <Link className="button">BUY NOW</Link>
-              </div>
-            </div>
+        <div className="col-6">
+        <h1 className="animated-header">ITEMS RECOMMENDED 4YOU!</h1>
+        <div className="main-banner position-relative">
+        <div className="image-container0">
+          <img
+            src={recommandedProducts[0]?.product?.images[0]?.url}
+            className="img-fluid rounded-3"
+            alt="main banner"
+          />
           </div>
-          <div className="col-6">
-            <div className="d-flex flex-wrap gap-10 justify-content-between align-items-center">
-              <div className="small-banner position-relative">
-                <img
-                  src="images/catbanner-01.jpg"
-                  className="img-fluid rounded-3"
-                  alt="main banner"
-                />
-                <div className="small-banner-content position-absolute">
-                  <h4>Best Sake</h4>
-                  <h5>MacBook Pro.</h5>
-                  <p>
-                    From Rs. 1,29,900.00 <br />
-                  </p>
-                </div>
-              </div>
-              <div className="small-banner position-relative">
-                <img
-                  src="images/catbanner-02.jpg"
-                  className="img-fluid rounded-3"
-                  alt="main banner"
-                />
-                <div className="small-banner-content position-absolute">
-                  <h4>NEW ARRIVAL</h4>
-                  <h5>But IPad Air</h5>
-                  <p>
-                    From Rs. 21,625.00 <br />
-                  </p>
-                </div>
-              </div>
-              <div className="small-banner position-relative ">
-                <img
-                  src="images/catbanner-03.jpg"
-                  className="img-fluid rounded-3"
-                  alt="main banner"
-                />
-                <div className="small-banner-content position-absolute">
-                  <h4>NEW ARRIVAL</h4>
-                  <h5>But IPad Air</h5>
-                  <p>
-                    From Rs. 41,900.00 <br />
-                  </p>
-                </div>
-              </div>
-              <div className="small-banner position-relative ">
-                <img
-                  src="images/catbanner-04.jpg"
-                  className="img-fluid rounded-3"
-                  alt="main banner"
-                />
-                <div className="small-banner-content position-absolute">
-                  <h4>NEW ARRIVAL</h4>
-                  <h5>But Headphone</h5>
-                  <p>
-                    From Rs. 41,000.00 <br />
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="main-banner-content position-absolute">
+            <h4>FOR YOU</h4>
+            <h5>{recommandedProducts[0]?.product?.title}</h5>
+            <p>From {recommandedProducts[0]?.product?.price} DT</p>
+            <button className="button">BUY NOW</button>
           </div>
         </div>
+      </div>
+      <div className="col-6">
+      <div className="d-flex flex-wrap gap-10 justify-content-between align-items-center">
+  {/* Limit the number of displayed products to 4 */}
+  {recommandedProducts?.slice(0, 4).map((product) => (
+    <div key={product?.product?._id} className="small-banner position-relative">
+      <div className="image-container1">
+        <img
+          src={product?.product?.images[0]?.url}
+          className="img-fluid rounded-3"
+          alt={product?.product?.title}
+        />
+      </div>
+      <div className="small-banner-content position-absolute">
+        <h4>NEW ARRIVAL</h4>
+        <h5>{product?.product?.title}</h5>
+        <h8>From {product?.product?.price || "0.00"} DT.</h8>
+      </div>
+    </div>
+  ))}
+</div>
+
+
+
+      </div>
+        </div>}
       </Container>
       <Container class1="home-wrapper-2 py-5">
         <div className="row">
@@ -271,7 +248,7 @@ const Home = () => {
                           activeColor="#ffd700"
                         />
 
-                        <p className="price">Rs. {item?.price}</p>
+                        <p className="price">{item?.price} DT</p>
                       </div>
                       <div className="action-bar position-absolute">
                         <div className="d-flex flex-column gap-15">
@@ -310,7 +287,7 @@ const Home = () => {
               <div className="famous-content position-absolute">
                 <h5>Big Screen</h5>
                 <h6>Smart Watch Series 7</h6>
-                <p>From Rs. 399</p>
+                <p>From 399 DT</p>
               </div>
             </div>
           </div>
@@ -338,7 +315,7 @@ const Home = () => {
               <div className="famous-content position-absolute">
                 <h5 className="text-dark">smartphones</h5>
                 <h6 className="text-dark">Iphone 14 Pro.</h6>
-                <p className="text-dark">Now in Green. From Rs. 61,000.00</p>
+                <p className="text-dark">Now in Green. From 61,000.00 DT</p>
               </div>
             </div>
           </div>
@@ -352,7 +329,7 @@ const Home = () => {
               <div className="famous-content position-absolute">
                 <h5 className="text-dark">home speakers</h5>
                 <h6 className="text-dark">Room-filling sound.</h6>
-                <p className="text-dark">From Rs. 699</p>
+                <p className="text-dark">From 699 DT.</p>
               </div>
             </div>
           </div>
@@ -446,7 +423,7 @@ const Home = () => {
                           activeColor="#ffd700"
                         />
 
-                        <p className="price">Rs. {item?.price}</p>
+                        <p className="price">{item?.price} DT</p>
                       </div>
                       <div className="action-bar position-absolute">
                         <div className="d-flex flex-column gap-15">

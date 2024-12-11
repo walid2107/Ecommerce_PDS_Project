@@ -353,7 +353,7 @@ const Checkout = () => {
                       </div>
                       <div className="flex-grow-1">
                         <h5 className="total">
-                          Rs. {item?.price * item?.quantity}
+                          {item?.price * item?.quantity} DT.
                         </h5>
                       </div>
                     </div>
@@ -364,18 +364,18 @@ const Checkout = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <p className="total">Subtotal</p>
                 <p className="total-price">
-                  Rs. {totalAmount ? totalAmount : "0"}
+                  {totalAmount ? totalAmount : "0"} DT.
                 </p>
               </div>
               <div className="d-flex justify-content-between align-items-center">
                 <p className="mb-0 total">Shipping</p>
-                <p className="mb-0 total-price">Rs. 100</p>
+                <p className="mb-0 total-price">100 DT.</p>
               </div>
             </div>
             <div className="d-flex justify-content-between align-items-center border-bootom py-4">
               <h4 className="total">Total</h4>
               <h5 className="total-price">
-                Rs. {totalAmount ? totalAmount + 100 : "0"}
+                {totalAmount ? totalAmount + 100 : "0"} DT.
               </h5>
             </div>
           </div>

@@ -35,14 +35,6 @@ export const addToWishlist = createAsyncThunk(
   }
 );
 
-const productState = {
-  product: "",
-  isError: false,
-  isSuccess: false,
-  isLoading: false,
-  message: "",
-};
-
 export const addRating = createAsyncThunk(
   "product/rating",
   async (data, thunkAPI) => {
@@ -53,6 +45,30 @@ export const addRating = createAsyncThunk(
     }
   }
 );
+
+export const getRecommandedProducts = createAsyncThunk(
+  "recommendations",
+  async (_,thunkAPI) => {
+    try {
+      return await productSevice.recommandProduct();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+
+
+const productState = {
+  product: "",
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: "",
+  recommandedProducts:[]
+};
+
+
 
 export const productSlice = createSlice({
   name: "product",
@@ -121,6 +137,21 @@ export const productSlice = createSlice({
         }
       })
       .addCase(addRating.rejected, (state, action) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(getRecommandedProducts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getRecommandedProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.recommandedProducts = action.payload;
+      })
+      .addCase(getRecommandedProducts.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;

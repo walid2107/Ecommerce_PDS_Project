@@ -801,3 +801,92 @@ footer .input-group-text {
   flex-wrap: wrap;
   gap: 50px;
 }
+.animated-header {
+  font-family: Arial, sans-serif;
+  font-size: 2.5em;
+  text-align: center;
+  color: #3498db;
+  animation: fadeIn 2s ease-in-out, pulse 1.5s infinite alternate ease-in-out;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Container for the image with fixed size */
+.image-container0 {
+  width: 650px;  /* Set a fixed width */
+  height: 400px; /* Set a fixed height */
+  overflow: hidden; /* Hide any overflowed image parts */
+}
+
+/* Apply object fit to ensure the image maintains the aspect ratio */
+.image-container0 img {
+  width: 200%;
+  height: 200%;
+  object-fit: cover;
+}
+
+/* Container for the image with fixed size */
+.image-container1 {
+  width: 250px;  /* Set a fixed width */
+  height: 250px; /* Set a fixed height */
+  overflow: hidden; /* Hide any overflowed image parts */
+}
+
+/* Apply object fit to ensure the image maintains the aspect ratio */
+.image-container1 img {
+  width: 150%;
+  height: 150%;
+  object-fit: cover;
+}
+
+/* Add styles for the content within the container */
+.small-banner-content {
+  position: absolute;
+  bottom: 10px; /* Adjust this to position the content better */
+  left: 10px;
+  right: 10px;
+  color: white;  /* Set text color to white */
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9); /* Apply a text shadow for better contrast */
+}
+.small-banner-content h8 {
+  color: #3498db;  /* Set text color to white */
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9); /* Apply a text shadow for better contrast */
+}
+
+
+
+/* Style for h4, h5, and p tags inside the content */
+.small-banner-content h4,
+.small-banner-content h5,
+.small-banner-content p {
+  margin: 0;
+  font-weight: bold; /* Add bold font for emphasis */
+}
+
+/* You can customize these styles further to adjust size and positioning */
+.small-banner-content h5 {
+  font-size: 1.2rem; /* Adjust the size of h5 */
+}
+
+.small-banner-content p {
+  font-size: 1rem; /* Adjust the size of p */
+}
