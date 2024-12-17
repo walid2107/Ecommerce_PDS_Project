@@ -12,21 +12,21 @@ const Footer = () => {
               <h4 className="text-white mb-4">Contact Us</h4>
               <div>
                 <address className="text-white fs-6">
-                  Hno : Daiict college, Reliance Cross Rd, <br />{" "}
-                  Gandhinagar,Gujarat <br />
-                  PinCode: 382007
+                  Beb el khadra, <br />{" "}
+                  1006 Tunis, <br />
+                  PinCode: 1006
                 </address>
                 <a
                   href="tel:+91 8264954234"
                   className="mt-3 d-block mb-1 text-white"
                 >
-                  +91 8264954234
+                  +216 8264954234
                 </a>
                 <a
                   href="mailto:devjariwala8444@gmail.com"
                   className="mt-2 d-block mb-0 text-white"
                 >
-                  devjariwala8444@gmail.com
+                  WSYB_Market@gmail.com
                 </a>
                 <div className="social_icons d-flex align-items-center gap-30 mt-4">
                   <a className="text-white" href="#">
@@ -73,10 +73,10 @@ const Footer = () => {
             <div className="col-2">
               <h4 className="text-white mb-4">Quick Links</h4>
               <div className="footer-link d-flex flex-column">
-                <Link className="text-white py-2 mb-1">Laptops</Link>
-                <Link className="text-white py-2 mb-1">Headphones</Link>
-                <Link className="text-white py-2 mb-1">Tablets</Link>
-                <Link className="text-white py-2 mb-1">Watch</Link>
+                <Link className="text-white py-2 mb-1">Jeans</Link>
+                <Link className="text-white py-2 mb-1">T-Chirt</Link>
+                <Link className="text-white py-2 mb-1">Shoes</Link>
+                <Link className="text-white py-2 mb-1">Accessory's</Link>
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ const Footer = () => {
           <div className="row">
             <div className="col-12">
               <p className="text-center mb-0 text-white">
-                &copy; {new Date().getFullYear()}; Powered by Cart Corner
+                &copy; {new Date().getFullYear()}; Powered by WSYB Market
               </p>
             </div>
           </div>
