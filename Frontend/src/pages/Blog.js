@@ -29,10 +29,10 @@ const Blog = () => {
               <h3 className="filter-title">Find By Categories</h3>
               <div>
                 <ul className="ps-0">
-                  <li>Watch</li>
-                  <li>Tv</li>
-                  <li>Camera</li>
-                  <li>Laptop</li>
+                  <li>Travels</li>
+                  <li>Trends</li>
+                  <li>Fashion</li>
+                  <li>shops</li>
                 </ul>
               </div>
             </div>
